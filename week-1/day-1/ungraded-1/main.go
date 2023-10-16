@@ -35,12 +35,11 @@ func (u User) ValidateStruct() error {
 		field := t.Field(i)
 		value := v.Field(i).Interface()
 
-		if field.Tag.Get("required") == "true" && value == "" {
-			return fmt.Errorf("%s is required", field.Name)
-		}
-
 		if field.Type.String() == "string" {
 			value := value.(string)
+			if field.Tag.Get("required") == "true" && value == "" {
+				return fmt.Errorf("%v is required", field.Name)
+			}
 
 			emailRegex, _ := regexp.Compile(`^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$`)
 			if field.Name == "Email" && !emailRegex.MatchString(value) {
@@ -57,7 +56,11 @@ func (u User) ValidateStruct() error {
 
 		} else if field.Type.String() == "int" {
 			value := value.(int)
-			
+
+			if field.Tag.Get("required") == "true" && value == 0 {
+				return fmt.Errorf("%v is required", field.Name)
+			}
+
 			min, _ := strconv.Atoi(field.Tag.Get("min")) 
 			max, _ := strconv.Atoi(field.Tag.Get("max")) 
 
