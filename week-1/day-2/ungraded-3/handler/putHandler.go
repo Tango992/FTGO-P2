@@ -11,6 +11,8 @@ import (
 )
 
 func (app *App) PutInventory(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	w.Header().Add("Content-Type", "application/json")
+
 	param := p.ByName("id")
 	id, err := strconv.Atoi(param)
 	if err != nil {
@@ -25,9 +27,7 @@ func (app *App) PutInventory(w http.ResponseWriter, r *http.Request, p httproute
 
 	res, err1 := app.Exec(`
 		UPDATE Inventories
-		SET 
-			Stock = ?,
-			Status_id = ?
+		SET  Stock = ?, Status_id = ?
 		WHERE Id = ?
 	`, values.Stock, values.Status_id, id)
 	if err1 != nil {
@@ -39,7 +39,6 @@ func (app *App) PutInventory(w http.ResponseWriter, r *http.Request, p httproute
 		panic(err2)
 	}
 
-	w.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]any{
 		"status": fmt.Sprintf("Affected rows: %v", affectedRows),
 		"values": values,

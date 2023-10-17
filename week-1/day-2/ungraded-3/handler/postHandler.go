@@ -10,6 +10,8 @@ import (
 )
 
 func (app *App) PostInventory(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	w.Header().Add("Content-Type", "application/json")
+
 	decoder := json.NewDecoder(r.Body)
 	var newInvent entity.PostInventory
 	decoder.Decode(&newInvent)
@@ -23,7 +25,6 @@ func (app *App) PostInventory(w http.ResponseWriter, r *http.Request, p httprout
 	}
 	affectedRows, _ := result.RowsAffected()
 
-	w.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]any{
 		"status": fmt.Sprintf("Affected rows: %v", affectedRows),
 		"values": newInvent,

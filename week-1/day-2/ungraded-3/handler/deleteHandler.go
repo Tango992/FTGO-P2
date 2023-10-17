@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-
+	
 	"github.com/julienschmidt/httprouter"
 )
 
 func (app *App) DeleteInventory(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	w.Header().Add("Content-Type", "application/json")
+	
 	param := p.ByName("id")
 	id, err := strconv.Atoi(param)
 	if err != nil {
@@ -29,7 +31,6 @@ func (app *App) DeleteInventory(w http.ResponseWriter, r *http.Request, p httpro
 		panic(err2)
 	}
 
-	w.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]any{
 		"status": fmt.Sprintf("Affected rows: %v", affectedRows),
 		"values": fmt.Sprintf("Column ID: %v", id),
