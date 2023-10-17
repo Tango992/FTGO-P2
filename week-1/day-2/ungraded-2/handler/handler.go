@@ -7,12 +7,12 @@ import (
 	"ungraded-2/entity"
 )
 
-type ConnectDb struct {
-	Db *sql	.DB
+type DB struct {
+	*sql.DB
 }
 
-func (d *ConnectDb) Heroes(w http.ResponseWriter, r *http.Request) {
-	rows, err := d.Db.Query(`
+func (d *DB) Heroes(w http.ResponseWriter, r *http.Request) {
+	rows, err := d.Query(`
 		SELECT h.ID, h.Name, u.Name, h.Skill, h.ImageURL
 		FROM Heroes h
 		JOIN Universe u ON u.ID = h.Universe_id
@@ -35,8 +35,8 @@ func (d *ConnectDb) Heroes(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(heroes)
 }
 
-func (d *ConnectDb) Villains(w http.ResponseWriter, r *http.Request) {
-	rows, err := d.Db.Query(`
+func (d *DB) Villains(w http.ResponseWriter, r *http.Request) {
+	rows, err := d.Query(`
 		SELECT v.ID, v.Name, u.Name, v.ImageURL
 		FROM Villains v
 		JOIN Universe u ON u.ID = v.Universe_id

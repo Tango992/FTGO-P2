@@ -7,7 +7,7 @@ import (
 
 func main() {
 	mux, server := config.Mux()
-	db := &handler.ConnectDb{Db: config.ConnectDb()}
+	db := &handler.DB{DB: config.ConnectDb()}
 
 	mux.HandleFunc("/villains", db.Villains)
 	mux.HandleFunc("/heroes", db.Heroes)

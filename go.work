@@ -4,4 +4,6 @@ use (
 	./week-1/day-1/preview
 	./week-1/day-1/reflect
 	./week-1/day-1/ungraded-1
+	./week-1/day-2/demo-http
+	./week-1/day-2/ungraded-2
 )
