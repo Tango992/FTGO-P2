@@ -12,7 +12,6 @@ func main() {
 	mux.HandleFunc("/villains", db.Villains)
 	mux.HandleFunc("/heroes", db.Heroes)
 
-
 	err := server.ListenAndServe()
 	if err != nil {
 		panic(err)
