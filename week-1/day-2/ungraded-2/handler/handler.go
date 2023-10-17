@@ -7,12 +7,12 @@ import (
 	"ungraded-2/entity"
 )
 
-type DB struct {
+type App struct {
 	*sql.DB
 }
 
-func (d *DB) Heroes(w http.ResponseWriter, r *http.Request) {
-	rows, err := d.Query(`
+func (app *App) Heroes(w http.ResponseWriter, r *http.Request) {
+	rows, err := app.Query(`
 		SELECT h.ID, h.Name, u.Name, h.Skill, h.ImageURL
 		FROM Heroes h
 		JOIN Universe u ON u.ID = h.Universe_id
@@ -25,18 +25,18 @@ func (d *DB) Heroes(w http.ResponseWriter, r *http.Request) {
 	var heroes []entity.Heroes
 	for rows.Next() {
 		hero := entity.Heroes{}
+		
 		if err := rows.Scan(&hero.ID, &hero.Name, &hero.Universe, &hero.Skill, &hero.ImageURL); err != nil {
 			panic(err)
 		}
-
 		heroes = append(heroes, hero)
 	}
 
 	json.NewEncoder(w).Encode(heroes)
 }
 
-func (d *DB) Villains(w http.ResponseWriter, r *http.Request) {
-	rows, err := d.Query(`
+func (app *App) Villains(w http.ResponseWriter, r *http.Request) {
+	rows, err := app.Query(`
 		SELECT v.ID, v.Name, u.Name, v.ImageURL
 		FROM Villains v
 		JOIN Universe u ON u.ID = v.Universe_id
@@ -58,4 +58,3 @@ func (d *DB) Villains(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(villains)
 }
-

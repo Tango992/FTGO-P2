@@ -7,10 +7,10 @@ import (
 
 func main() {
 	mux, server := config.Mux()
-	db := &handler.DB{DB: config.ConnectDb()}
+	app := &handler.App{DB: config.ConnectDb()}
 
-	mux.HandleFunc("/villains", db.Villains)
-	mux.HandleFunc("/heroes", db.Heroes)
+	mux.HandleFunc("/villains", app.Villains)
+	mux.HandleFunc("/heroes", app.Heroes)
 
 	err := server.ListenAndServe()
 	if err != nil {
