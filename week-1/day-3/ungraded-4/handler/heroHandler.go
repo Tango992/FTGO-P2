@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -25,8 +26,9 @@ func (d DbHandler) GetHeroes(w http.ResponseWriter, r *http.Request, p httproute
 	`)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]any{
-			"message": err.Error(),
+		json.NewEncoder(w).Encode(entity.Response{
+			Code: http.StatusBadRequest,
+			Message: err.Error(),
 		})
 		return
 	}
@@ -38,8 +40,9 @@ func (d DbHandler) GetHeroes(w http.ResponseWriter, r *http.Request, p httproute
 		
 		if err := rows.Scan(&hero.H_ID, &hero.H_Name, &hero.H_Universe, &hero.H_Skill, &hero.H_ImageURL); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(map[string]any{
-				"message": err.Error(),
+			json.NewEncoder(w).Encode(entity.Response{
+				Code: http.StatusBadRequest,
+				Message: err.Error(),
 			})
 			return
 		}
@@ -47,7 +50,11 @@ func (d DbHandler) GetHeroes(w http.ResponseWriter, r *http.Request, p httproute
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(heroes)
+	json.NewEncoder(w).Encode(entity.Response{
+		Code: http.StatusOK,
+		Message: "Get all heroes",
+		Data: heroes,
+	})
 }
 
 func (d DbHandler) GetHeroById(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
@@ -57,8 +64,9 @@ func (d DbHandler) GetHeroById(w http.ResponseWriter, r *http.Request, p httprou
 	id, err := strconv.Atoi(param)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]any{
-			"message": err.Error(),
+		json.NewEncoder(w).Encode(entity.Response{
+			Code: http.StatusBadRequest,
+			Message: err.Error(),
 		})
 		return
 	}
@@ -75,13 +83,18 @@ func (d DbHandler) GetHeroById(w http.ResponseWriter, r *http.Request, p httprou
 
 	var hero entity.Hero
 	if err := row.Scan(&hero.H_ID, &hero.H_Name, &hero.H_Universe, &hero.H_Skill, &hero.H_ImageURL); err != nil {
-		w.WriteHeader(http.StatusNoContent)
-		json.NewEncoder(w).Encode(map[string]any{
-			"message": err.Error(),
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(entity.Response{
+			Code: http.StatusOK,
+			Message: "Column out of range",
 		})
 		return
 	}
 	
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(hero)
+	json.NewEncoder(w).Encode(entity.Response{
+		Code: http.StatusOK,
+		Message: fmt.Sprintf("Get hero by id = %v", id),
+		Data: hero,
+	})
 }

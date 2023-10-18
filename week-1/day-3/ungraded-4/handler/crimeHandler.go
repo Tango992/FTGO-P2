@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -31,8 +32,9 @@ func (d DbHandler) GetCrimeReports(w http.ResponseWriter, r *http.Request, p htt
 	`)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]any{
-			"message": err.Error(),
+		json.NewEncoder(w).Encode(entity.Response{
+			Code: http.StatusBadRequest,
+			Message: err.Error(),
 		})
 		return
 	}
@@ -49,8 +51,9 @@ func (d DbHandler) GetCrimeReports(w http.ResponseWriter, r *http.Request, p htt
 		)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(map[string]any{
-				"message": err.Error(),
+			json.NewEncoder(w).Encode(entity.Response{
+				Code: http.StatusBadRequest,
+				Message: err.Error(),
 			})
 			return
 		}
@@ -58,7 +61,11 @@ func (d DbHandler) GetCrimeReports(w http.ResponseWriter, r *http.Request, p htt
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(crimes)
+	json.NewEncoder(w).Encode(entity.Response{
+		Code: http.StatusOK,
+		Message: "Get crime reports",
+		Data: crimes,
+	})
 }
 
 
@@ -69,8 +76,9 @@ func (d DbHandler) GetCrimeReportsId(w http.ResponseWriter, r *http.Request, p h
 	id, err := strconv.Atoi(param)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]any{
-			"message": err.Error(),
+		json.NewEncoder(w).Encode(entity.Response{
+			Code: http.StatusBadRequest,
+			Message: err.Error(),
 		})
 		return
 	}
@@ -92,8 +100,9 @@ func (d DbHandler) GetCrimeReportsId(w http.ResponseWriter, r *http.Request, p h
 	`, id)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]any{
-			"message": err.Error(),
+		json.NewEncoder(w).Encode(entity.Response{
+			Code: http.StatusBadRequest,
+			Message: err.Error(),
 		})
 		return
 	}
@@ -105,12 +114,20 @@ func (d DbHandler) GetCrimeReportsId(w http.ResponseWriter, r *http.Request, p h
 		&crime.V_ID, &crime.V_Name, &crime.V_Universe, &crime.V_ImageURL,
 	)
 	if err != nil {
-		w.WriteHeader(http.StatusNoContent)
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(entity.Response{
+			Code: http.StatusOK,
+			Message: "Column out of range",
+		})
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(crime)
+	json.NewEncoder(w).Encode(entity.Response{
+		Code: http.StatusOK,
+		Message: fmt.Sprintf("Get crime report on id = %v", id),
+		Data: crime,
+	})
 }
 
 
@@ -121,8 +138,9 @@ func (d DbHandler) PostCrimeReport(w http.ResponseWriter, r *http.Request, p htt
 	var newCrime entity.PostCrimeReport
 	if err := decoder.Decode(&newCrime); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{
-			"message": err.Error(),
+		json.NewEncoder(w).Encode(entity.Response{
+			Code: http.StatusBadRequest,
+			Message: err.Error(),
 		})
 		return
 	}
@@ -136,13 +154,18 @@ func (d DbHandler) PostCrimeReport(w http.ResponseWriter, r *http.Request, p htt
 	`, newCrime.Hero_id, newCrime.Villain_id, newCrime.Description, newCrime.Date)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{
-			"message": err.Error(),
+		json.NewEncoder(w).Encode(entity.Response{
+			Code: http.StatusBadRequest,
+			Message: err.Error(),
 		})
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(entity.Response{
+		Code: http.StatusCreated,
+		Message: "Crime report posted",
+	})
 }
 
 
@@ -153,8 +176,9 @@ func (d DbHandler) PutCrimeReport(w http.ResponseWriter, r *http.Request, p http
 	id, err := strconv.Atoi(param)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]any{
-			"message": err.Error(),
+		json.NewEncoder(w).Encode(entity.Response{
+			Code: http.StatusBadRequest,
+			Message: err.Error(),
 		})
 		return
 	}
@@ -163,8 +187,9 @@ func (d DbHandler) PutCrimeReport(w http.ResponseWriter, r *http.Request, p http
 	var putCrime entity.PostCrimeReport
 	if err := decoder.Decode(&putCrime); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{
-			"message": err.Error(),
+		json.NewEncoder(w).Encode(entity.Response{
+			Code: http.StatusBadRequest,
+			Message: err.Error(),
 		})
 		return
 	}
@@ -181,8 +206,9 @@ func (d DbHandler) PutCrimeReport(w http.ResponseWriter, r *http.Request, p http
 	`, putCrime.Description, putCrime.Date, id)
 	if err1 != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{
-			"message": err1.Error(),
+		json.NewEncoder(w).Encode(entity.Response{
+			Code: http.StatusBadRequest,
+			Message: err1.Error(),
 		})
 		return
 	}
@@ -190,10 +216,18 @@ func (d DbHandler) PutCrimeReport(w http.ResponseWriter, r *http.Request, p http
 	rowsAffected, _ := result.RowsAffected()
 	if rowsAffected == 0 {
 		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(entity.Response{
+			Code: http.StatusNotFound,
+			Message: "Column not found",
+		})
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(entity.Response{
+		Code: http.StatusOK,
+		Message: fmt.Sprintf("Crime report updated on id = %v", id),
+	})
 }
 
 func (d DbHandler) DeleteCrimeReport(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
@@ -203,8 +237,9 @@ func (d DbHandler) DeleteCrimeReport(w http.ResponseWriter, r *http.Request, p h
 	id, err := strconv.Atoi(param)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]any{
-			"message": err.Error(),
+		json.NewEncoder(w).Encode(entity.Response{
+			Code: http.StatusBadRequest,
+			Message: err.Error(),
 		})
 		return
 	}
@@ -218,8 +253,9 @@ func (d DbHandler) DeleteCrimeReport(w http.ResponseWriter, r *http.Request, p h
 	`, id)
 	if err1 != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{
-			"message": err1.Error(),
+		json.NewEncoder(w).Encode(entity.Response{
+			Code: http.StatusBadRequest,
+			Message: err1.Error(),
 		})
 		return
 	}
@@ -227,8 +263,16 @@ func (d DbHandler) DeleteCrimeReport(w http.ResponseWriter, r *http.Request, p h
 	rowsAffected, _ := result.RowsAffected()
 	if rowsAffected == 0 {
 		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(entity.Response{
+			Code: http.StatusNotFound,
+			Message: "Column not found",
+		})
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(entity.Response{
+		Code: http.StatusOK,
+		Message: fmt.Sprintf("Crime deleted on id = %v", id),
+	})
 }

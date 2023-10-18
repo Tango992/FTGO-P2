@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -27,8 +28,9 @@ func (d DbHandler) GetVillains(w http.ResponseWriter, r *http.Request, p httprou
 	`)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]any{
-			"message": err.Error(),
+		json.NewEncoder(w).Encode(entity.Response{
+			Code: http.StatusBadRequest,
+			Message: err.Error(),
 		})
 		return
 	}
@@ -40,16 +42,20 @@ func (d DbHandler) GetVillains(w http.ResponseWriter, r *http.Request, p httprou
 
 		if err := rows.Scan(&villain.V_ID, &villain.V_Name, &villain.V_Universe, &villain.V_ImageURL); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(map[string]any{
-				"message": err.Error(),
+			json.NewEncoder(w).Encode(entity.Response{
+				Code: http.StatusBadRequest,
+				Message: err.Error(),
 			})
-			return
 		}
 		villains = append(villains, villain)
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(villains)
+	json.NewEncoder(w).Encode(entity.Response{
+		Code: http.StatusOK,
+		Message: "Get all villains",
+		Data: villains,
+	})
 }
 
 func (d DbHandler) GetVillainById(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
@@ -59,8 +65,9 @@ func (d DbHandler) GetVillainById(w http.ResponseWriter, r *http.Request, p http
 	id, err := strconv.Atoi(param)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]any{
-			"message": err.Error(),
+		json.NewEncoder(w).Encode(entity.Response{
+			Code: http.StatusBadRequest,
+			Message: err.Error(),
 		})
 		return
 	}
@@ -77,13 +84,18 @@ func (d DbHandler) GetVillainById(w http.ResponseWriter, r *http.Request, p http
 
 	var villain entity.Villain
 	if err := row.Scan(&villain.V_ID, &villain.V_Name, &villain.V_Universe, &villain.V_ImageURL); err != nil {
-		w.WriteHeader(http.StatusNoContent)
-		json.NewEncoder(w).Encode(map[string]any{
-			"message": err.Error(),
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(entity.Response{
+			Code: http.StatusOK,
+			Message: "Column out of range",
 		})
 		return
 	}
 	
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(villain)
+	json.NewEncoder(w).Encode(entity.Response{
+		Code: http.StatusOK,
+		Message: fmt.Sprintf("Get villain by id = %v", id),
+		Data: villain,
+	})
 }
