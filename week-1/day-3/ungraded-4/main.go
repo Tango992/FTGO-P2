@@ -7,15 +7,17 @@ import (
 
 func main() {
 	router, server := config.SetupServer()
-	crimeHandler := handler.NewCrimeHandler(config.ConnectDb())
-	defer crimeHandler.Close()
+	dbHandler := handler.NewDbHandler(config.ConnectDb())
+	defer dbHandler.Close()
 
 	router.PanicHandler = handler.PanicFunc
-	router.GET("/crimereports", crimeHandler.GetCrimeReports)
-	router.GET("/crimereports/:id", crimeHandler.GetCrimeReportsId)
-	router.POST("/crimereports", crimeHandler.PostCrimeReport)
-	router.PUT("/crimereports/:id", crimeHandler.PutCrimeReport)
-	router.DELETE("/crimereports/:id", crimeHandler.DeleteCrimeReport)
+	router.GET("/heroes", dbHandler.GetHeroes)
+	router.GET("/villains", dbHandler.GetVillains)
+	router.GET("/crimereports", dbHandler.GetCrimeReports)
+	router.GET("/crimereports/:id", dbHandler.GetCrimeReportsId)
+	router.POST("/crimereports", dbHandler.PostCrimeReport)
+	router.PUT("/crimereports/:id", dbHandler.PutCrimeReport)
+	router.DELETE("/crimereports/:id", dbHandler.DeleteCrimeReport)
 
 	panic(server.ListenAndServe())
 }

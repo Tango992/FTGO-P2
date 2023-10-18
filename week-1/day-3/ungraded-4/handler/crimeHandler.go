@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -12,24 +11,14 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-type CrimeHandler struct {
-	*sql.DB
-}
 
-func NewCrimeHandler(db *sql.DB) *CrimeHandler {
-	return &CrimeHandler{
-		DB: db,
-	}
-}
-
-
-func (c CrimeHandler) GetCrimeReports(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (d DbHandler) GetCrimeReports(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	w.Header().Add("Content-Type", "application/json")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
 	defer cancel()
 
-	rows, err := c.QueryContext(ctx, `
+	rows, err := d.QueryContext(ctx, `
 		SELECT 
 			cr.ID, cr.Description, cr.Date, 
 			h.ID, h.Name, u2.Name, h.Skill, h.ImageURL,
@@ -73,7 +62,7 @@ func (c CrimeHandler) GetCrimeReports(w http.ResponseWriter, r *http.Request, p 
 }
 
 
-func (c CrimeHandler) GetCrimeReportsId(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (d DbHandler) GetCrimeReportsId(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	w.Header().Add("Content-Type", "application/json")
 
 	param := p.ByName("id")
@@ -89,7 +78,7 @@ func (c CrimeHandler) GetCrimeReportsId(w http.ResponseWriter, r *http.Request, 
 	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
 	defer cancel()
 
-	row := c.QueryRowContext(ctx, `
+	row := d.QueryRowContext(ctx, `
 		SELECT 
 			cr.ID, cr.Description, cr.Date, 
 			h.ID, h.Name, u2.Name, h.Skill, h.ImageURL,
@@ -125,7 +114,7 @@ func (c CrimeHandler) GetCrimeReportsId(w http.ResponseWriter, r *http.Request, 
 }
 
 
-func (c CrimeHandler) PostCrimeReport(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (d DbHandler) PostCrimeReport(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	w.Header().Add("Content-Type", "application/json")
 	
 	decoder := json.NewDecoder(r.Body)
@@ -141,7 +130,7 @@ func (c CrimeHandler) PostCrimeReport(w http.ResponseWriter, r *http.Request, p 
 	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
 	defer cancel()
 
-	_, err := c.ExecContext(ctx, `
+	_, err := d.ExecContext(ctx, `
 		INSERT INTO CrimeReports (Hero_id, Villain_id, Description, Date)
 		VALUES (?,?,?,?);
 	`, newCrime.Hero_id, newCrime.Villain_id, newCrime.Description, newCrime.Date)
@@ -157,7 +146,7 @@ func (c CrimeHandler) PostCrimeReport(w http.ResponseWriter, r *http.Request, p 
 }
 
 
-func (c CrimeHandler) PutCrimeReport(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (d DbHandler) PutCrimeReport(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	w.Header().Add("Content-Type", "application/json")
 	
 	param := p.ByName("id")
@@ -183,7 +172,7 @@ func (c CrimeHandler) PutCrimeReport(w http.ResponseWriter, r *http.Request, p h
 	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
 	defer cancel()
 
-	result, err1 := c.ExecContext(ctx, `
+	result, err1 := d.ExecContext(ctx, `
 		UPDATE CrimeReports
 		SET 
 			Description = ?,
@@ -207,7 +196,7 @@ func (c CrimeHandler) PutCrimeReport(w http.ResponseWriter, r *http.Request, p h
 	w.WriteHeader(http.StatusOK)
 }
 
-func (c CrimeHandler) DeleteCrimeReport(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (d DbHandler) DeleteCrimeReport(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	w.Header().Add("Content-Type", "application/json")
 
 	param := p.ByName("id")
@@ -223,7 +212,7 @@ func (c CrimeHandler) DeleteCrimeReport(w http.ResponseWriter, r *http.Request, 
 	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
 	defer cancel()
 
-	result, err1 := c.ExecContext(ctx, `
+	result, err1 := d.ExecContext(ctx, `
 		DELETE FROM CrimeReports
 		WHERE ID = ?
 	`, id)
