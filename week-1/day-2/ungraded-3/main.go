@@ -6,16 +6,17 @@ import (
 	"ungraded-3/handler"
 )
 
+
 func main() {
 	router, server := config.SetupServer()
-	app := &handler.App{DB: config.ConnectDb()}
+	db := &handler.NewInventoryHandler{DB: config.ConnectDb()}
 
-	router.PanicHandler = handler.PanicHandler
-	router.GET("/inventories", app.GetInventories)
-	router.GET("/inventories/:id", app.GetInventoriesId)
-	router.POST("/inventories", app.PostInventory)
-	router.PUT("/inventories/:id", app.PutInventory)
-	router.DELETE("/inventories/:id", app.DeleteInventory)
+	router.PanicHandler = handler.PanicFunc
+	router.GET("/inventories", db.GetInventories)
+	router.GET("/inventories/:id", db.GetInventoriesId)
+	router.POST("/inventories", db.PostInventory)
+	router.PUT("/inventories/:id", db.PutInventory)
+	router.DELETE("/inventories/:id", db.DeleteInventory)
 
 	log.Fatal(server.ListenAndServe())
 }
