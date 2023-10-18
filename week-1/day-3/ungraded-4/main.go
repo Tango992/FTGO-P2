@@ -14,6 +14,8 @@ func main() {
 	router.GET("/crimereports", crimeHandler.GetCrimeReports)
 	router.GET("/crimereports/:id", crimeHandler.GetCrimeReportsId)
 	router.POST("/crimereports", crimeHandler.PostCrimeReport)
+	router.PUT("/crimereports/:id", crimeHandler.PutCrimeReport)
+	router.DELETE("/crimereports/:id", crimeHandler.DeleteCrimeReport)
 
 	panic(server.ListenAndServe())
 }

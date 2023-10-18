@@ -22,6 +22,7 @@ func NewCrimeHandler(db *sql.DB) *CrimeHandler {
 	}
 }
 
+
 func (c CrimeHandler) GetCrimeReports(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	w.Header().Add("Content-Type", "application/json")
 
@@ -153,4 +154,92 @@ func (c CrimeHandler) PostCrimeReport(w http.ResponseWriter, r *http.Request, p 
 	}
 
 	w.WriteHeader(http.StatusCreated)
+}
+
+
+func (c CrimeHandler) PutCrimeReport(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	w.Header().Add("Content-Type", "application/json")
+	
+	param := p.ByName("id")
+	id, err := strconv.Atoi(param)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]any{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var putCrime entity.PostCrimeReport
+	if err := decoder.Decode(&putCrime); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+	defer cancel()
+
+	result, err1 := c.ExecContext(ctx, `
+		UPDATE CrimeReports
+		SET 
+			Description = ?,
+			Date = ?
+		WHERE ID = ?
+	`, putCrime.Description, putCrime.Date, id)
+	if err1 != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"message": err1.Error(),
+		})
+		return
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func (c CrimeHandler) DeleteCrimeReport(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	w.Header().Add("Content-Type", "application/json")
+
+	param := p.ByName("id")
+	id, err := strconv.Atoi(param)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]any{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+	defer cancel()
+
+	result, err1 := c.ExecContext(ctx, `
+		DELETE FROM CrimeReports
+		WHERE ID = ?
+	`, id)
+	if err1 != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"message": err1.Error(),
+		})
+		return
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
