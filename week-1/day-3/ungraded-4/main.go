@@ -12,7 +12,10 @@ func main() {
 
 	router.PanicHandler = handler.PanicFunc
 	router.GET("/heroes", dbHandler.GetHeroes)
+	router.GET("/heroes/:id", dbHandler.GetHeroById)
 	router.GET("/villains", dbHandler.GetVillains)
+	router.GET("/villains/:id", dbHandler.GetVillainById)
+
 	router.GET("/crimereports", dbHandler.GetCrimeReports)
 	router.GET("/crimereports/:id", dbHandler.GetCrimeReportsId)
 	router.POST("/crimereports", dbHandler.PostCrimeReport)
