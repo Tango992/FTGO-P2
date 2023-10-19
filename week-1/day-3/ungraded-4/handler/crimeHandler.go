@@ -31,9 +31,9 @@ func (d DbHandler) GetCrimeReports(w http.ResponseWriter, r *http.Request, p htt
 		JOIN Universe u2 ON h.Universe_id = u2.ID
 	`)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(entity.Response{
-			Code: http.StatusBadRequest,
+			Code: http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 		return
@@ -50,9 +50,9 @@ func (d DbHandler) GetCrimeReports(w http.ResponseWriter, r *http.Request, p htt
 			&crime.V_ID, &crime.V_Name, &crime.V_Universe, &crime.V_ImageURL,
 		)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(entity.Response{
-				Code: http.StatusBadRequest,
+				Code: http.StatusInternalServerError,
 				Message: err.Error(),
 			})
 			return
@@ -99,9 +99,9 @@ func (d DbHandler) GetCrimeReportsId(w http.ResponseWriter, r *http.Request, p h
 		WHERE cr.ID = ?
 	`, id)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(entity.Response{
-			Code: http.StatusBadRequest,
+			Code: http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 		return
@@ -114,10 +114,10 @@ func (d DbHandler) GetCrimeReportsId(w http.ResponseWriter, r *http.Request, p h
 		&crime.V_ID, &crime.V_Name, &crime.V_Universe, &crime.V_ImageURL,
 	)
 	if err != nil {
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(entity.Response{
-			Code: http.StatusOK,
-			Message: "Column out of range",
+			Code: http.StatusNotFound,
+			Message: "Not found",
 		})
 		return
 	}
@@ -153,9 +153,9 @@ func (d DbHandler) PostCrimeReport(w http.ResponseWriter, r *http.Request, p htt
 		VALUES (?,?,?,?);
 	`, newCrime.Hero_id, newCrime.Villain_id, newCrime.Description, newCrime.Date)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(entity.Response{
-			Code: http.StatusBadRequest,
+			Code: http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 		return
@@ -165,6 +165,7 @@ func (d DbHandler) PostCrimeReport(w http.ResponseWriter, r *http.Request, p htt
 	json.NewEncoder(w).Encode(entity.Response{
 		Code: http.StatusCreated,
 		Message: "Crime report posted",
+		Data: newCrime,
 	})
 }
 
@@ -205,9 +206,9 @@ func (d DbHandler) PutCrimeReport(w http.ResponseWriter, r *http.Request, p http
 		WHERE ID = ?
 	`, putCrime.Description, putCrime.Date, id)
 	if err1 != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(entity.Response{
-			Code: http.StatusBadRequest,
+			Code: http.StatusInternalServerError,
 			Message: err1.Error(),
 		})
 		return
