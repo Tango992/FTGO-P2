@@ -20,6 +20,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CrimeReports'
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 
     post:
       summary: 'Post a new crime report'
@@ -27,30 +33,26 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                hero_id:
-                  type: integer
-                  format: int32
-                  example: 1
-                villain_id:
-                  type: integer
-                  format: int32
-                  example: 1
-                description:
-                  type: string
-                  example: 'some description'
-                date:
-                  type: string
-                  format: date
-                  example: '2021-01-01'
+              $ref: '#/components/schemas/PostRequest'
       responses:
-        '200':
+        '201':
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CrimePosted'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 
   '/crimereports/{id}':
     get:
@@ -69,6 +71,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CrimeReport'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+                
     put:
       summary: 'Update crime report'
       parameters:
@@ -82,15 +103,8 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                description:
-                  type: string
-                  example: 'some description'
-                date:
-                  type: string
-                  format: date
-                  example: '2021-01-01'
+              $ref: '#/components/schemas/PutRequest'
+
       responses:
         '200':
           description: ok
@@ -98,6 +112,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CrimePut'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 
     delete:
       summary: 'Delete crime by id'
@@ -115,6 +147,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CrimeDeleted'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 
 components:
   schemas:
@@ -146,7 +190,7 @@ components:
           items:
             anyOf:
               - $ref: '#/components/schemas/Report'
-              - $ref: '#/components/schemas/Report'
+              - $ref: '#/components/schemas/Report2'
 
     Report:
       type: object
@@ -178,8 +222,7 @@ components:
           type: string
           example: 'Crime report posted'
         data:
-          type: string
-          example: null
+          $ref: '#/components/schemas/PostRequest'
 
     CrimePut:
       type: object
@@ -192,8 +235,7 @@ components:
           type: string
           example: 'Crime report updated on id = crimeId'
         data:
-          type: string
-          example: null
+          $ref: '#/components/schemas/PutRequest'
 
     CrimeDeleted:
       type: object
@@ -208,6 +250,36 @@ components:
         data:
           type: string
           example: null
+
+    PostRequest:
+      type: object
+      properties:
+        hero_id:
+          type: integer
+          format: int32
+          example: 1
+        villain_id:
+          type: integer
+          format: int32
+          example: 1
+        description:
+          type: string
+          example: 'some description'
+        date:
+          type: string
+          format: date
+          example: '2021-01-01'
+
+    PutRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          example: 'some description'
+        date:
+          type: string
+          format: date
+          example: '2021-01-01'
 
     Hero:
       type: object
@@ -245,3 +317,101 @@ components:
         imgurl:
           type: string
           example: 'https://somelink.com'
+
+    Report2:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 2
+        hero:
+          $ref: '#/components/schemas/Hero2'
+        villain:
+          $ref: '#/components/schemas/Villain2'
+        description:
+          type: string
+          example: "some description"
+        date:
+          type: string
+          format: date
+          example: '2019-01-01'
+
+    Hero2:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 2
+        name:
+          type: string
+          example: 'Hulk'
+        universe:
+          type: string
+          example: 'Earth'
+        skill:
+          type: string
+          example: 'Turning into a giant'
+        imgurl:
+          type: string
+          example: 'https://somelink.com'
+
+    Villain2:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 2
+        name:
+          type: string
+          example: 'Abomination'
+        universe:
+          type: string
+          example: 'Earth-616'
+        imgurl:
+          type: string
+          example: 'https://somelink.com'
+    
+    BadRequest:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 400
+        message:
+          type: string
+          example: 'Bad request'
+        data:
+          type: string
+          example: null
+
+    NotFound:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 404
+        message:
+          type: string
+          example: 'Not Found'
+        data:
+          type: string
+          example: null
+  
+    InternalServerError:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 500
+        message:
+          type: string
+          example: 'Internal server error'
+        data:
+          type: string
+          example: null
