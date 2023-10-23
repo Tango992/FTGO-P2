@@ -10,5 +10,6 @@ use (
 	./week-1/day-3/ungraded-4
 	./week-1/day-5/go-sp
 	./week-1/day-5/misc
+	./week-2/day-1/preview
 	./week-2/day-1/preview-gin
 )
