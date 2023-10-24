@@ -111,3 +111,30 @@ func (db DbHandler) InsertRecipeToDb(data entity.Recipe) *entity.Response {
 
 	return nil
 }
+
+func (db DbHandler) DeleteRecipeFromDb(id int) *entity.Response {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	res, err := db.ExecContext(ctx, `
+		DELETE FROM recipes
+		WHERE id = ?
+	`, id)
+	if err != nil {
+		return &entity.Response{
+			Code: http.StatusInternalServerError,
+			Message: "Internal server error",
+			Data: nil,
+		}
+	}
+
+	rowsAffected, _ := res.RowsAffected()
+	if rowsAffected == 0 {
+		return &entity.Response{
+			Code: http.StatusNotFound,
+			Message: "Recipe not found",
+			Data: nil,
+		}
+	}
+	return nil
+}

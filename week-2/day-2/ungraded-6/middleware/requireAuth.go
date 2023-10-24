@@ -45,8 +45,30 @@ func RequireAuth(c *gin.Context) {
 		c.Next()
 		return
 	}
-	
+
 	c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 		"message": "Unauthorized access",
 	})
+}
+
+func RequireSuperAdmin(c *gin.Context) {
+	user, exits := c.Get("user")
+
+	if !exits {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"code": http.StatusUnauthorized,
+			"message": "Unauthorized access",
+		})
+		return
+	}
+
+	if user.(gin.H)["role"] != "superadmin" {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"code": http.StatusUnauthorized,
+			"message": "Super admin role required",
+		})
+		return
+	}
+
+	c.Next()
 }

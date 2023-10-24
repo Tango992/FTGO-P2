@@ -32,8 +32,13 @@ func main() {
 		auth := router.Group("/")
 		auth.Use(middleware.RequireAuth)
 		{
+			superAdmin := auth.Group("")
+			superAdmin.Use(middleware.RequireSuperAdmin)
+			{
+				superAdmin.POST("recipes", recipeController.PostRecipe)
+				superAdmin.DELETE("recipes/:id", recipeController.DeleteRecipe)
+			}
 			auth.GET("recipes", recipeController.GetAllRecipes)
-			auth.POST("recipes", recipeController.PostRecipe)
 		}
 	}
 

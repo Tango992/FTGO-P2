@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 	"ungraded-6/entity"
 
 	"github.com/gin-gonic/gin"
@@ -32,17 +34,6 @@ func (rh RecipeHandler) GetAllRecipes(c *gin.Context) {
 }
 
 func (rh RecipeHandler) PostRecipe(c *gin.Context) {
-	user, _ := c.Get("user")
-
-	if user.(gin.H)["role"] != "superadmin" {
-		WriteJson(&c, entity.Response{
-			Code: http.StatusUnauthorized,
-			Message: "Unauthorized access",
-			Data: nil,
-		})
-		return
-	}
-
 	var data entity.Recipe
 	if err := c.ShouldBindJSON(&data); err != nil {
 		WriteJson(&c, entity.Response{
@@ -65,7 +56,30 @@ func (rh RecipeHandler) PostRecipe(c *gin.Context) {
 
 	WriteJson(&c, entity.Response{
 		Code: http.StatusOK,
-		Message: "Get context",
+		Message: "Recipe posted",
 		Data: data,
+	})
+}
+
+func (rh RecipeHandler) DeleteRecipe(c *gin.Context) {
+	param := c.Param("id")
+	id, err := strconv.Atoi(param)
+	if err != nil {
+		WriteJson(&c, entity.Response{
+			Code: http.StatusBadRequest,
+			Message: "Invalid syntax",
+			Data: nil,
+		})
+		return
+	}
+
+	if dbErr := rh.DbHandler.DeleteRecipeFromDb(id); dbErr != nil {
+		WriteJson(&c, *dbErr)
+		return
+	}
+
+	WriteJson(&c, entity.Response{
+		Code: http.StatusOK,
+		Message: fmt.Sprintf("Recipe deleted on id = %d", id),
 	})
 }
