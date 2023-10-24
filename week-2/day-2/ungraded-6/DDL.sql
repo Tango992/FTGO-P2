@@ -1,0 +1,12 @@
+CREATE DATABASE p2_ungraded_6;
+
+CREATE TABLE users(
+    id INT AUTO_INCREMENT NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    age INT UNSIGNED NOT NULL,
+    occupation VARCHAR(100) NOT NULL,
+    role VARCHAR(100) NOT NULL,
+    PRIMARY KEY (id)
+);
