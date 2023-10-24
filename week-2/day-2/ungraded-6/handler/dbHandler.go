@@ -58,3 +58,37 @@ func (db DbHandler) FindUserInDb(credential *entity.Credential) (entity.User, *e
 
 	return user, nil
 }
+
+
+func (db DbHandler) FindAllRecipesInDb() ([]entity.Recipe, *entity.Response) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	rows, err := db.QueryContext(ctx, `
+		SELECT id, name, description, duration, rating
+		FROM recipes
+	`)
+	if err != nil {
+		return []entity.Recipe{}, &entity.Response{
+			Code: http.StatusInternalServerError,
+			Message: "Internal server error",
+			Data: nil,
+		}
+	}
+	defer rows.Close()
+
+	var recipes []entity.Recipe
+	for rows.Next() {
+		var r entity.Recipe
+		if err := rows.Scan(&r.Id, &r.Name, &r.Description, &r.Duration, &r.Rating); err != nil {
+			return []entity.Recipe{}, &entity.Response{
+				Code: http.StatusInternalServerError,
+				Message: "Internal server error",
+				Data: nil,
+			}
+		}
+
+		recipes = append(recipes, r)
+	}
+	return recipes, nil
+}

@@ -10,3 +10,12 @@ CREATE TABLE users(
     role VARCHAR(100) NOT NULL,
     PRIMARY KEY (id)
 );
+
+CREATE TABLE recipes(
+    id INT AUTO_INCREMENT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    duration FLOAT UNSIGNED NOT NULL,
+    rating FLOAT UNSIGNED NOT NULL,
+    PRIMARY KEY (id)
+);

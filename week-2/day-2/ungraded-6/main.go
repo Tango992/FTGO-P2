@@ -18,15 +18,23 @@ func main() {
 	defer db.Close()
 
 	dbHandler := handler.NewDbHandler(db)
-	controller := handler.NewUserHandler(dbHandler)
+	userController := handler.NewUserHandler(dbHandler)
+	recipeController := handler.NewRecipeHandler(dbHandler)
 
 	r := gin.Default()
 	
 	router := r.Group("/")
 	router.Use(middleware.Logger)
 	{
-		router.POST("/register", controller.Register)
-		router.POST("/login", controller.Login)
+		router.POST("register", userController.Register)
+		router.POST("login", userController.Login)
+
+		auth := router.Group("/")
+		auth.Use(middleware.RequireAuth)
+		{
+			auth.GET("recipes", recipeController.GetAllRecipes)
+			auth.POST("recipes", recipeController.PostRecipe)
+		}
 	}
 
 	r.Run()

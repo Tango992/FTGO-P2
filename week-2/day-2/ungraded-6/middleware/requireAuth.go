@@ -12,7 +12,9 @@ import (
 func RequireAuth(c *gin.Context) {
 	tokenString, err := c.Cookie("Authorization")
 	if err != nil {
-		c.AbortWithStatus(http.StatusUnauthorized)
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"message": "Unauthorized access",
+		})
 		return
 	}
 
@@ -29,7 +31,7 @@ func RequireAuth(c *gin.Context) {
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		if time.Now().Unix() > claims["exp"].(int64) {
+		if float64(time.Now().Unix()) > claims["exp"].(float64) {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
@@ -41,6 +43,10 @@ func RequireAuth(c *gin.Context) {
 		})
 
 		c.Next()
+		return
 	}
-	c.AbortWithStatus(http.StatusUnauthorized)
+	
+	c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+		"message": "Unauthorized access",
+	})
 }
