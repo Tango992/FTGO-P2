@@ -2,10 +2,12 @@ package handler
 
 import (
 	"net/http"
+	"os"
+	"time"
 	"ungraded-6/entity"
 
 	"github.com/gin-gonic/gin"
-	// "github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type UserHandler struct {
@@ -73,11 +75,25 @@ func (u UserHandler) Login(c *gin.Context) {
 		return
 	}
 
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"id": user.Id,
+		"name": user.Name,
+		"role": user.Role,
+		"exp": time.Now().Add(time.Hour).Unix(),
+	})
 
+	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
+	if err != nil {
+		WriteJson(&c, entity.Response{
+			Code: http.StatusInternalServerError,
+			Message: "Failed to sign token",
+			Data: nil,
+		})
+	}
 
-	// token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-	// 	"id": "hi",
-	// })
+	// Send same site cookie
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("Authorization", tokenString, 3600, "", "", false, true)
 
 	WriteJson(&c, entity.Response{
 		Code: http.StatusOK,
