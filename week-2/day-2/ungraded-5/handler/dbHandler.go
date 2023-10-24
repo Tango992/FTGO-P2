@@ -50,8 +50,8 @@ func (db DbHandler) FindHashInDb(credential *entity.Credential) (string, *entity
 	var hash string
 	if err := row.Scan(&hash); err != nil {
 		return hash, &entity.Response{
-			Code: http.StatusNotFound,
-			Message: err.Error(),
+			Code: http.StatusUnauthorized,
+			Message: "Invalid credentials",
 			Data: nil,
 		}
 	}
