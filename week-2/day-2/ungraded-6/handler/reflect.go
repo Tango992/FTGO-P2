@@ -10,9 +10,9 @@ import (
 	"ungraded-6/entity"
 )
 
-func ValidateStruct(u *entity.User) *entity.Response {
-	t := reflect.TypeOf(u).Elem()
-	v := reflect.ValueOf(u).Elem()
+func ValidateStruct(u any) *entity.Response {
+	t := reflect.TypeOf(u)
+	v := reflect.ValueOf(u)
 
 	for i := 0;i < t.NumField(); i++ {
 		field := t.Field(i)

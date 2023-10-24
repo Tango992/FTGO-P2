@@ -31,7 +31,7 @@ func (u UserHandler) Register(c *gin.Context) {
 		return
 	}
 
-	if reflectErr := ValidateStruct(&user); reflectErr != nil {
+	if reflectErr := ValidateStruct(user); reflectErr != nil {
 		WriteJson(&c, *reflectErr)
 		return
 	}

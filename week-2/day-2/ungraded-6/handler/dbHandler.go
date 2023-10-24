@@ -92,3 +92,22 @@ func (db DbHandler) FindAllRecipesInDb() ([]entity.Recipe, *entity.Response) {
 	}
 	return recipes, nil
 }
+
+func (db DbHandler) InsertRecipeToDb(data entity.Recipe) *entity.Response {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err := db.ExecContext(ctx, `
+		INSERT INTO recipes (name, description, duration, rating)
+		VALUES (?,?,?,?)
+	`, data.Name, data.Description, data.Duration, data.Rating)
+	if err != nil {
+		return &entity.Response{
+			Code: http.StatusInternalServerError,
+			Message: "Failed inserting into database",
+			Data: nil,
+		}
+	}
+
+	return nil
+}

@@ -50,6 +50,17 @@ func (rh RecipeHandler) PostRecipe(c *gin.Context) {
 			Message: "Invalid syntax",
 			Data: nil,
 		})
+		return
+	}
+
+	if reflectErr := ValidateStruct(data); reflectErr != nil {
+		WriteJson(&c, *reflectErr)
+		return
+	}
+
+	if dbErr := rh.DbHandler.InsertRecipeToDb(data); dbErr != nil {
+		WriteJson(&c, *dbErr)
+		return
 	}
 
 	WriteJson(&c, entity.Response{
