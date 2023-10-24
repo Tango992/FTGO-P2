@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"regexp"
 	"strconv"
+	"slices"
 	"ungraded-5/entity"
 )
 
@@ -33,6 +34,15 @@ func ValidateStruct(u *entity.User) *entity.Response {
 				return &entity.Response{
 					Code: http.StatusBadRequest,
 					Message: "Invalid email format",
+					Data: nil,
+				}
+			}
+
+			roles := []string{"", "admin", "superadmin"}
+			if field.Name == "Role" && !slices.Contains(roles, value){
+				return &entity.Response{
+					Code: http.StatusBadRequest,
+					Message: "Invalid role",
 					Data: nil,
 				}
 			}
