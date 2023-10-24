@@ -7,10 +7,9 @@ import (
 
 func WriteJson(c **gin.Context, data entity.Response) {
 	if data.Data == nil {
-		(*c).JSON(data.Code, entity.Response{
-			Code: data.Code,
-			Message: data.Message,
-			Data: struct{}{},
+		(*c).JSON(data.Code, gin.H{
+			"code": data.Code,
+			"message": data.Message,
 		})
 		return
 	}
