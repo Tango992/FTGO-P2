@@ -33,6 +33,33 @@ func (rh RecipeHandler) GetAllRecipes(c *gin.Context) {
 	})
 }
 
+func (rh RecipeHandler) GetRecipe(c *gin.Context) {
+	var data entity.Recipe
+	var err error
+
+	param := c.Param("id")
+	data.Id, err = strconv.Atoi(param)
+	if err != nil {
+		WriteJson(&c, entity.Response{
+			Code: http.StatusBadRequest,
+			Message: "Invalid syntax",
+			Data: nil,
+		})
+		return
+	}
+
+	if dbErr := rh.DbHandler.FindRecipeInDb(&data); dbErr != nil {
+		WriteJson(&c, *dbErr)
+		return
+	}
+
+	WriteJson(&c, entity.Response{
+		Code: http.StatusOK,
+		Message: "Get recipe by id",
+		Data: data,
+	})
+}
+
 func (rh RecipeHandler) PostRecipe(c *gin.Context) {
 	var data entity.Recipe
 	if err := c.ShouldBindJSON(&data); err != nil {
@@ -55,7 +82,7 @@ func (rh RecipeHandler) PostRecipe(c *gin.Context) {
 	}
 
 	WriteJson(&c, entity.Response{
-		Code: http.StatusOK,
+		Code: http.StatusCreated,
 		Message: "Recipe posted",
 		Data: data,
 	})
@@ -81,5 +108,46 @@ func (rh RecipeHandler) DeleteRecipe(c *gin.Context) {
 	WriteJson(&c, entity.Response{
 		Code: http.StatusOK,
 		Message: fmt.Sprintf("Recipe deleted on id = %d", id),
+	})
+}
+
+func (rh RecipeHandler) UpdateRecipe(c *gin.Context) {
+	var data entity.Recipe
+	var err error
+
+	param := c.Param("id")
+	data.Id, err = strconv.Atoi(param)
+	if err != nil {
+		WriteJson(&c, entity.Response{
+			Code: http.StatusBadRequest,
+			Message: "Invalid syntax",
+			Data: nil,
+		})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&data); err != nil {
+		WriteJson(&c, entity.Response{
+			Code: http.StatusBadRequest,
+			Message: "Invalid syntax",
+			Data: nil,
+		})
+		return
+	}
+
+	if reflectErr := ValidateStruct(data); reflectErr != nil {
+		WriteJson(&c, *reflectErr)
+		return
+	}
+
+	if dbErr := rh.UpdateRecipeFromDb(data); dbErr != nil {
+		WriteJson(&c, *dbErr)
+		return
+	}
+
+	WriteJson(&c, entity.Response{
+		Code: http.StatusOK,
+		Message: "Recipe updated",
+		Data: data,
 	})
 }

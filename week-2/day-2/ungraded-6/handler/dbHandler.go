@@ -59,6 +59,25 @@ func (db DbHandler) FindUserInDb(credential *entity.Credential) (entity.User, *e
 	return user, nil
 }
 
+func (db DbHandler) FindRecipeInDb(data *entity.Recipe) (*entity.Response) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	row := db.QueryRowContext(ctx, `
+		SELECT name, description, duration, rating
+		FROM recipes
+		WHERE id = ?
+	`, data.Id)
+
+	if err := row.Scan(&data.Name, &data.Description, &data.Duration, &data.Rating); err != nil {
+		return &entity.Response{
+			Code: http.StatusNotFound,
+			Message: err.Error(),
+			Data: nil,
+		}
+	}
+	return nil
+}
 
 func (db DbHandler) FindAllRecipesInDb() ([]entity.Recipe, *entity.Response) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -124,6 +143,34 @@ func (db DbHandler) DeleteRecipeFromDb(id int) *entity.Response {
 		return &entity.Response{
 			Code: http.StatusInternalServerError,
 			Message: "Internal server error",
+			Data: nil,
+		}
+	}
+
+	rowsAffected, _ := res.RowsAffected()
+	if rowsAffected == 0 {
+		return &entity.Response{
+			Code: http.StatusNotFound,
+			Message: "Recipe not found",
+			Data: nil,
+		}
+	}
+	return nil
+}
+
+func (db DbHandler) UpdateRecipeFromDb(data entity.Recipe) *entity.Response {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	res, err := db.ExecContext(ctx, `
+		UPDATE recipes
+		SET name = ?, description = ?, duration = ?, rating = ?
+		WHERE id = ?
+	`, data.Name, data.Description, data.Duration, data.Rating, data.Id)
+	if err != nil {
+		return &entity.Response{
+			Code: http.StatusInternalServerError,
+			Message: err.Error(),
 			Data: nil,
 		}
 	}

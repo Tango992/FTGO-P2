@@ -24,6 +24,8 @@ func ValidateStruct(u any) *entity.Response {
 				Message: fmt.Sprintf("%v is required", field.Name),
 				Data: nil,
 			}
+		} else if field.Tag.Get("required") == "" {
+			continue
 		}
 
 		if field.Type.String() == "string" {

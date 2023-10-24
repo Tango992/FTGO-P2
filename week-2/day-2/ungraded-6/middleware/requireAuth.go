@@ -57,7 +57,7 @@ func RequireSuperAdmin(c *gin.Context) {
 	if !exits {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"code": http.StatusUnauthorized,
-			"message": "Unauthorized access",
+			"message": "Token does not exists",
 		})
 		return
 	}

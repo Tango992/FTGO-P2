@@ -29,16 +29,18 @@ func main() {
 		router.POST("register", userController.Register)
 		router.POST("login", userController.Login)
 
-		auth := router.Group("/")
-		auth.Use(middleware.RequireAuth)
+		admin := router.Group("")
+		admin.Use(middleware.RequireAuth)
 		{
-			superAdmin := auth.Group("")
+			superAdmin := admin.Group("")
 			superAdmin.Use(middleware.RequireSuperAdmin)
 			{
 				superAdmin.POST("recipes", recipeController.PostRecipe)
 				superAdmin.DELETE("recipes/:id", recipeController.DeleteRecipe)
 			}
-			auth.GET("recipes", recipeController.GetAllRecipes)
+			admin.PUT("recipes/:id", recipeController.UpdateRecipe)
+			admin.GET("recipes/:id", recipeController.GetRecipe)
+			admin.GET("recipes", recipeController.GetAllRecipes)
 		}
 	}
 
