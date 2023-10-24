@@ -12,4 +12,6 @@ use (
 	./week-1/day-5/misc
 	./week-2/day-1/preview
 	./week-2/day-1/preview-gin
+	./week-2/day-2/midddleware-excercise
+	./week-2/day-2/ungraded-5
 )
