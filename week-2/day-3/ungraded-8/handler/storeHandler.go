@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"os"
 	"time"
-	"ugc-7/dto"
-	"ugc-7/entity"
+	"ugc-8/dto"
+	"ugc-8/entity"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -60,7 +60,7 @@ func (u StoreHandler) Login(c *gin.Context) {
 		return
 	}
 
-	store, dbErr := u.DbHandler.FindUserInDb(&credential)
+	store, dbErr := u.DbHandler.FindStoreInDb(&credential)
 	if dbErr != nil {
 		WriteJson(&c, dbErr)
 		return
@@ -72,7 +72,7 @@ func (u StoreHandler) Login(c *gin.Context) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id": store.Id,
+		"id": store.ID,
 		"name": store.Name,
 		"email": store.Email,
 		"role": store.Type,
@@ -86,6 +86,7 @@ func (u StoreHandler) Login(c *gin.Context) {
 			Message: "Failed to sign token",
 			Data: nil,
 		})
+		return
 	}
 
 	// Send same site cookie
