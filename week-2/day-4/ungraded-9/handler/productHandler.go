@@ -29,12 +29,12 @@ func (ph ProductHandler) PostProduct(c *gin.Context) {
 	product.StoreID = id
 	
 	if err := c.ShouldBindJSON(&product); err != nil {
-		WriteJsonErr(&c, &utils.ErrBadRequest, err.Error())
+		WriteJsonErr(c, &utils.ErrBadRequest, err.Error())
 		return
 	}
 
 	if dbErr := ph.DbHandler.AddProductToDb(&product); dbErr != nil {
-		WriteJsonErr(&c, dbErr)
+		WriteJsonErr(c, dbErr)
 		return
 	}
 
@@ -49,7 +49,7 @@ func (ph ProductHandler) GetAllProducts(c *gin.Context) {
 	// panic("caught")
 	products, dbErr := ph.DbHandler.FindAllProductFromDb()
 	if dbErr != nil {
-		WriteJsonErr(&c, dbErr)
+		WriteJsonErr(c, dbErr)
 		return
 	}
 
@@ -66,13 +66,13 @@ func (ph ProductHandler) GetProductById(c *gin.Context) {
 	param := c.Param("id")
 	id, err := strconv.Atoi(param)
 	if err != nil {
-		WriteJsonErr(&c, &utils.ErrBadRequest, err.Error())
+		WriteJsonErr(c, &utils.ErrBadRequest, err.Error())
 		return
 	}
 	product.ID = uint(id)
 
 	if dbErr := ph.DbHandler.FindProductInDb(&product); dbErr != nil {
-		WriteJsonErr(&c, dbErr)
+		WriteJsonErr(c, dbErr)
 		return
 	}
 
@@ -94,13 +94,13 @@ func (ph ProductHandler) DeleteProductById(c *gin.Context) {
 	param := c.Param("id")
 	id, err := strconv.Atoi(param)
 	if err != nil {
-		WriteJsonErr(&c, &utils.ErrBadRequest, err.Error())
+		WriteJsonErr(c, &utils.ErrBadRequest, err.Error())
 		return
 	}
 	product.ID = uint(id)
 
 	if dbErr := ph.DbHandler.DeleteProductInDb(&product); dbErr != nil {
-		WriteJsonErr(&c, dbErr)
+		WriteJsonErr(c, dbErr)
 		return
 	}
 
@@ -122,18 +122,18 @@ func (ph ProductHandler) UpdateProductById(c *gin.Context) {
 	param := c.Param("id")
 	id, err := strconv.Atoi(param)
 	if err != nil {
-		WriteJsonErr(&c, &utils.ErrBadRequest, err.Error())
+		WriteJsonErr(c, &utils.ErrBadRequest, err.Error())
 		return
 	}
 	product.ID = uint(id)
 
 	if err := c.ShouldBindJSON(&product); err != nil {
-		WriteJsonErr(&c, &utils.ErrBadRequest, err.Error())
+		WriteJsonErr(c, &utils.ErrBadRequest, err.Error())
 		return
 	}
 
 	if dbErr := ph.DbHandler.UpdateProductInDb(&product); dbErr != nil {
-		WriteJsonErr(&c, dbErr)
+		WriteJsonErr(c, dbErr)
 		return
 	}
 

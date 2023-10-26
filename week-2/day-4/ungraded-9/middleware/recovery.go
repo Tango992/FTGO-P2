@@ -14,7 +14,7 @@ func Recovery() gin.HandlerFunc {
 			if r := recover(); r != nil {
 				fmt.Println("Recovery middleware caught panic")
 
-				handler.WriteJsonErr(&c, &utils.ErrInternalServer)
+				handler.WriteJsonErr(c, &utils.ErrInternalServer)
 				c.Abort()
 			}
 		}()

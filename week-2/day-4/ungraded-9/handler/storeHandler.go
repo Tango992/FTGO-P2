@@ -25,17 +25,17 @@ func NewStoreHandler(dbHandler *DbHandler) *StoreHandler {
 func (u StoreHandler) Register(c *gin.Context) {
 	var store entity.Store
 	if err := c.ShouldBindJSON(&store); err != nil {
-		WriteJsonErr(&c, &utils.ErrBadRequest, err.Error())
+		WriteJsonErr(c, &utils.ErrBadRequest, err.Error())
 		return
 	}
 
 	if hashErr := CreateHash(&store); hashErr != nil {
-		WriteJsonErr(&c, hashErr)
+		WriteJsonErr(c, hashErr)
 		return
 	}
 
 	if dbErr := u.DbHandler.AddStoreToDb(store); dbErr != nil {
-		WriteJsonErr(&c, dbErr)
+		WriteJsonErr(c, dbErr)
 		return
 	}
 
@@ -49,18 +49,18 @@ func (u StoreHandler) Register(c *gin.Context) {
 func (u StoreHandler) Login(c *gin.Context) {
 	var credential dto.Credential
 	if err := c.ShouldBindJSON(&credential); err != nil {
-		WriteJsonErr(&c, &utils.ErrBadRequest, err.Error())
+		WriteJsonErr(c, &utils.ErrBadRequest, err.Error())
 		return
 	}
 
 	store, dbErr := u.DbHandler.FindStoreInDb(&credential)
 	if dbErr != nil {
-		WriteJsonErr(&c, dbErr)
+		WriteJsonErr(c, dbErr)
 		return
 	}
 
 	if hashErr := HashMatched(store.Password, &credential); hashErr != nil {
-		WriteJsonErr(&c, hashErr)
+		WriteJsonErr(c, hashErr)
 		return
 	}
 

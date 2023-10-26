@@ -14,7 +14,7 @@ func RequireAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString, err := c.Cookie("Authorization")
 		if err != nil {
-			handler.WriteJsonErr(&c, &utils.ErrUnauthorized, "Requires log in")
+			handler.WriteJsonErr(c, &utils.ErrUnauthorized, "Requires log in")
 			c.Abort()
 			return
 		}
@@ -27,14 +27,14 @@ func RequireAuth() gin.HandlerFunc {
 		})
 	
 		if parseErr != nil {
-			handler.WriteJsonErr(&c, &utils.ErrUnauthorized, "Requires log in")
+			handler.WriteJsonErr(c, &utils.ErrUnauthorized, "Requires log in")
 			c.Abort()
 			return
 		}
 	
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			if float64(time.Now().Unix()) > claims["exp"].(float64) {
-				handler.WriteJsonErr(&c, &utils.ErrUnauthorized, "Requires log in")
+				handler.WriteJsonErr(c, &utils.ErrUnauthorized, "Requires log in")
 				c.Abort()
 				return
 			}
@@ -50,7 +50,7 @@ func RequireAuth() gin.HandlerFunc {
 			return
 		}
 
-		handler.WriteJsonErr(&c, &utils.ErrUnauthorized, "Requires log in")
+		handler.WriteJsonErr(c, &utils.ErrUnauthorized, "Requires log in")
 		c.Abort()
 	}
 }
