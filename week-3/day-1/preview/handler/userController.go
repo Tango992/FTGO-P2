@@ -2,12 +2,14 @@ package handler
 
 import (
 	"net/http"
+	"os"
 	"preview-week3/dto"
 	"preview-week3/entity"
 	"preview-week3/helpers"
 	"preview-week3/utils"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type UserController struct {
@@ -70,9 +72,22 @@ func (uc UserController) Login(c *gin.Context) {
 		return
 	}
 
+	claims := jwt.MapClaims{
+		"id": dbUserData.ID,
+		"username": dbUserData.Username,
+		"email": dbUserData.Email,
+	}
+	
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	tokenSigned, jwtErr := token.SignedString([]byte(os.Getenv("SECRET")))
+	if jwtErr != nil {
+		helpers.ErrJsonWriter(c, utils.ErrInternalServer, "Failed to sign jwt token")
+	}
+
 	dbUserData.Password = ""
 	c.JSON(http.StatusOK, dto.Response{
-		Message: "Logged in",
-		Data: dbUserData,
+		Message: "Logged in. Use the following token for authorization purposes",
+		Data: tokenSigned,
 	})
 }
