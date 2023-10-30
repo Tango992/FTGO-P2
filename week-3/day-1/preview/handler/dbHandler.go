@@ -49,3 +49,31 @@ func (db DbHandler) FindUserInDb(data dto.LoginData) (entity.User, *utils.ErrRes
 	
 	return user, nil
 }
+
+func (db DbHandler) AddPhotoIntoDb(data *entity.Photo) *utils.ErrResponse {
+	res := db.Create(data)
+	if res.Error != nil {
+		resErr := utils.ErrInternalServer
+		resErr.Details = res.Error.Error()
+		return &resErr
+	}
+	return nil
+}
+
+func (db DbHandler) GetPhotosInDb(userId uint) ([]entity.Photo, *utils.ErrResponse) {
+	photos := []entity.Photo{}
+
+	res := db.Where("user_id = ?", userId).Find(&photos)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			resErr := utils.ErrNotFound
+			resErr.Details = res.Error.Error()
+			return []entity.Photo{}, &resErr
+		}
+
+		resErr := utils.ErrInternalServer
+		resErr.Details = res.Error.Error()
+		return []entity.Photo{}, &resErr
+	}
+	return photos, nil
+}

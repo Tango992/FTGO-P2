@@ -7,6 +7,7 @@ type Photo struct {
 	Title     string    `gorm:"not null" json:"title" binding:"required"`
 	Caption   string    `json:"caption"`
 	PhotoUrl  string    `gorm:"not null" json:"photo_url" binding:"required"`
+	UserID    uint      `gorm:"not null" json:"user_id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	Comments  []Comment `json:"-"`

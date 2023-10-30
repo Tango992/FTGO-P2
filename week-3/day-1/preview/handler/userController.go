@@ -40,6 +40,7 @@ func (uc UserController) Register(c *gin.Context) {
 		Email: registerTemp.Email,
 		Password: registerTemp.Password,
 		Age: registerTemp.Age,
+		Role: registerTemp.Role,
 	}
 
 	if dbErr := uc.DbHandler.AddUserIntoDb(&registerData); dbErr != nil {
