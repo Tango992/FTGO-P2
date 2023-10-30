@@ -50,3 +50,29 @@ func (uc UserController) Register(c *gin.Context) {
 		Data: registerData,
 	})
 }
+
+func (uc UserController) Login(c *gin.Context) {
+	var loginData dto.LoginData
+
+	if err := c.ShouldBindJSON(&loginData); err != nil {
+		helpers.ErrJsonWriter(c, utils.ErrBadRequest, err.Error())
+		return
+	}
+
+	dbUserData, dbErr := uc.DbHandler.FindUserInDb(loginData)
+	if dbErr != nil {
+		helpers.ErrJsonWriter(c, *dbErr, nil)
+		return
+	}
+
+	if helpers.PasswordMismatch(dbUserData, loginData) {
+		helpers.ErrJsonWriter(c, utils.ErrUnauthorized, "Invalid email or password")
+		return
+	}
+
+	dbUserData.Password = ""
+	c.JSON(http.StatusOK, dto.Response{
+		Message: "Logged in",
+		Data: dbUserData,
+	})
+}

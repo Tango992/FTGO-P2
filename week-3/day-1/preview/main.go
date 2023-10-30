@@ -22,6 +22,7 @@ func main() {
 	user := r.Group("/users")
 	{
 		user.POST("/register", userController.Register)
+		user.POST("/login", userController.Login)
 	}
 
 
