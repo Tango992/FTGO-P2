@@ -1,0 +1,19 @@
+package helpers
+
+import (
+	"net/http"
+	"ungraded-11/dto"
+
+	"github.com/labstack/echo/v4"
+	"golang.org/x/crypto/bcrypt"
+)
+
+func CreateHashPassword(data *dto.RegisterUser) error {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create hash")
+	}
+
+	data.Password = string(hashedPassword)
+	return nil
+}
