@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"net/http"
+	"ungraded-11/entity"
 	"ungraded-11/dto"
 
 	"github.com/labstack/echo/v4"
@@ -16,4 +17,11 @@ func CreateHashPassword(data *dto.RegisterUser) error {
 
 	data.Password = string(hashedPassword)
 	return nil
+}
+
+func PasswordDoesNotMatch(dbData entity.User, loginData dto.Login) bool {
+	if err := bcrypt.CompareHashAndPassword([]byte(dbData.Password), []byte(loginData.Password)); err != nil {
+		return true
+	}
+	return false
 }
