@@ -41,3 +41,9 @@ func (uc UserController) Register(c echo.Context) error {
 	
 	return c.JSON(http.StatusCreated, user)
 }
+
+func (uc UserController) Login(c echo.Context) error {
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "Logged in!",
+	})
+}

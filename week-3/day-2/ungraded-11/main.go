@@ -50,6 +50,7 @@ func main() {
 	users := e.Group("/users")
 	{
 		users.POST("/register", userController.Register)
+		users.POST("/login", userController.Login)
 	}
 
 	e.Logger.Fatal(e.Start(":1323"))
