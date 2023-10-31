@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"ungraded-11/entity"
 	"ungraded-11/dto"
@@ -20,18 +19,35 @@ func NewProductHandler(dbHandler repository.DbHandler) ProductController {
 	}
 }
 
+// Products      godoc
+// @Summary      View all products
+// @Tags         products
+// @Produce      json
+// @Success      200  {object}  []entity.Product
+// @Failure      400  {object}  dto.Error
+// @Failure      500  {object}  dto.Error
+// @Router       /products [get]
 func (pc ProductController) GetProducts(c echo.Context) error {
 	products, err := pc.DbHandler.GetAllProducts()
 	if err != nil {
 		return err
 	}
-	
-	user := c.Get("user")
-	fmt.Println(user)
-	
 	return c.JSON(http.StatusOK, products)
 }
 
+// Transaction   godoc
+// @Summary      Establish a transaction
+// @Tags         transactions
+// @Accept       json
+// @Produce      json
+// @Param        Authorization header string true "JWT Token"
+// @Param        request body dto.RequestTransaction  true  "Transaction data"
+// @Success      201  {object}  dto.TransactionResponse
+// @Failure      400  {object}  dto.Error
+// @Failure      401  {object}  dto.Error
+// @Failure      404  {object}  dto.Error
+// @Failure      500  {object}  dto.Error
+// @Router       /transactions [post]
 func (pc ProductController) PostTransaction(c echo.Context) error {
 	claimsTemp := c.Get("user")
 	claims := claimsTemp.(map[string]any)
@@ -55,8 +71,8 @@ func (pc ProductController) PostTransaction(c echo.Context) error {
 		return dbErr
 	}
 	
-	return c.JSON(http.StatusCreated, echo.Map{
-		"message": "Transaction established",
-		"data": requestTransaction,
+	return c.JSON(http.StatusCreated, dto.Response{
+		Message: "Transaction established",
+		Data: requestTransaction,
 	})
 }

@@ -34,6 +34,12 @@ func main() {
 		photos.POST("", photoController.PostPhoto)
 	}
 
+	comments := r.Group("/comments")
+	comments.Use(middleware.RequireAuth())
+	{
+		
+	}
+
 
 	log.Fatal(r.Run(":8080"))
 }

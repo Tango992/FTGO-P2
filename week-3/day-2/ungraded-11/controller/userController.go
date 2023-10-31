@@ -22,6 +22,16 @@ func NewUserController(dbHandler repository.DbHandler) UserController {
 	}
 }
 
+// Register      godoc
+// @Summary      Register an account
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Param        request body dto.RegisterUser  true  "Registration data"
+// @Success      201  {object}  dto.RegisterResponse
+// @Failure      400  {object}  dto.Error
+// @Failure      500  {object}  dto.Error
+// @Router       /users/register [post]
 func (uc UserController) Register(c echo.Context) error {
 	var registerData dto.RegisterUser
 
@@ -45,6 +55,18 @@ func (uc UserController) Register(c echo.Context) error {
 	return c.JSON(http.StatusCreated, user)
 }
 
+// Login         godoc
+// @Summary      Log in an existing account
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Param        request body dto.Login  true  "Log in data"
+// @Success      200  {object}  dto.LoginResponse
+// @Failure      400  {object}  dto.Error
+// @Failure      401  {object}  dto.Error
+// @Failure      404  {object}  dto.Error
+// @Failure      500  {object}  dto.Error
+// @Router       /users/login [post]
 func (uc UserController) Login(c echo.Context) error {
 	var loginData dto.Login
 
@@ -80,6 +102,6 @@ func (uc UserController) Login(c echo.Context) error {
 	dbData.Password = ""
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "Logged in!",
-		"data": tokenString,
+		"token": tokenString,
 	})
 }
