@@ -16,6 +16,7 @@ func LogrusConfig() middleware.RequestLoggerConfig {
 			log.WithFields(logrus.Fields{
 				"URI":    values.URI,
 				"status": values.Status,
+				"latency": values.Latency,
 			}).Info("request")
 	
 			return nil

@@ -62,3 +62,39 @@ func (db DbHandler) GetAllProducts() ([]entity.Product, error) {
 	}
 	return products, nil
 }
+
+func (db DbHandler) EstablishTransactions(requestData *entity.Transaction) error {
+	var userData entity.User
+	if err := db.Where("id = ?", requestData.UserID).First(&userData).Error; err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, "Cannot find requested user")
+	} 
+
+	var productData entity.Product
+	if err := db.Where("id = ?", requestData.ProductID).First(&productData).Error; err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, "Cannot find requested product")
+	} 
+
+	subTotal := productData.Price * float32(requestData.Quantity)
+	requestData.TotalAmount = subTotal
+	
+	transactionErr := db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&productData).Update("stock", (productData.Stock - requestData.Quantity)).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Model(&userData).Update("deposit_amount", (userData.DepositAmount - subTotal)).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Create(&requestData).Error; err != nil {
+			return err
+		}
+		
+		return nil
+	})
+	if transactionErr != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, transactionErr.Error())
+	}
+	
+	return nil
+}
