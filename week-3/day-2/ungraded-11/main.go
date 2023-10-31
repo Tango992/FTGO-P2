@@ -5,12 +5,12 @@ import (
 	"ungraded-11/config"
 	"ungraded-11/controller"
 	"ungraded-11/handler"
+	"ungraded-11/middlewares"
 
 	"github.com/go-playground/validator/v10"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/sirupsen/logrus"
 )
 
 type CustomValidator struct {
@@ -33,19 +33,7 @@ func main() {
 	e := echo.New()
 	e.Validator = &CustomValidator{validator: validator.New()}
 
-	log := logrus.New()
-	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
-		LogURI:    true,
-		LogStatus: true,
-		LogValuesFunc: func(c echo.Context, values middleware.RequestLoggerValues) error {
-			log.WithFields(logrus.Fields{
-				"URI":    values.URI,
-				"status": values.Status,
-			}).Info("request")
-
-			return nil
-		},
-	}))
+	e.Use(middleware.RequestLoggerWithConfig(middlewares.LogrusConfig()))
 
 	users := e.Group("/users")
 	{
