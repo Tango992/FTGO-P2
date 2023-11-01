@@ -21,4 +21,5 @@ use (
 	./week-2/day-4/ungraded-9
 	./week-3/day-1/preview
 	./week-3/day-2/ungraded-11
+	./week-3/day-3/api-ninja
 )
