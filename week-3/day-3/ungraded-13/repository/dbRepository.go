@@ -93,8 +93,17 @@ func (db DbHandler) EstablishTransactions(requestData *entity.Transaction) error
 		return nil
 	})
 	if transactionErr != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, transactionErr.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, transactionErr.Error())
 	}
 	
 	return nil
+}
+
+func (db DbHandler) FindAllStoresInDb() ([]entity.Store, error) {
+	stores := []entity.Store{}
+
+	if err := db.Find(&stores).Error; err != nil {
+		return []entity.Store{}, echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	return stores, nil
 }

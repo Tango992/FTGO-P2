@@ -63,8 +63,9 @@ func (pc ProductController) PostTransaction(c echo.Context) error {
 
 	requestTransaction := entity.Transaction{
 		UserID: uint(claims["id"].(float64)),
-		ProductID: requestTransactionTemp.ProductId,
+		ProductID: requestTransactionTemp.ProductID,
 		Quantity: requestTransactionTemp.Quantity,
+		StoreID: requestTransactionTemp.StoreID,
 	}
 
 	if dbErr := pc.DbHandler.EstablishTransactions(&requestTransaction); dbErr != nil {

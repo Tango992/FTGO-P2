@@ -1,6 +1,7 @@
 package dto
 
 type RequestTransaction struct {
-	ProductId uint `json:"product_id" validate:"required"`
+	ProductID uint `json:"product_id" validate:"required"`
 	Quantity  uint `json:"quantity" validate:"required"`
+	StoreID   uint `json:"store_id" validate:"required"`
 }

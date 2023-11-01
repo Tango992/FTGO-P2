@@ -46,6 +46,7 @@ func main() {
 	dbHandler := repository.NewDbHandler(db)
 	userController := controller.NewUserController(dbHandler)
     productController := controller.NewProductHandler(dbHandler)
+	storeController := controller.NewStoreController(dbHandler)
 
 	e := echo.New()
 	e.Validator = &CustomValidator{validator: validator.New()}
@@ -57,6 +58,13 @@ func main() {
 		users.POST("/register", userController.Register)
 		users.POST("/login", userController.Login)
 	}
+
+	stores := e.Group("/stores")
+	{
+		stores.GET("", storeController.GetStores)
+		stores.POST("/:id", storeController.GetStoreById)
+	}
+	
     e.GET("/products", productController.GetProducts)
     e.POST("/transactions", middlewares.RequireAuth(productController.PostTransaction))
 
