@@ -102,8 +102,25 @@ func (db DbHandler) EstablishTransactions(requestData *entity.Transaction) error
 func (db DbHandler) FindAllStoresInDb() ([]entity.Store, error) {
 	stores := []entity.Store{}
 
-	if err := db.Find(&stores).Error; err != nil {
+	if err := db.Select("id", "name", "address").Find(&stores).Error; err != nil {
 		return []entity.Store{}, echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	return stores, nil
+}
+
+func (db DbHandler) FindStoreInDb(storeId int) (dto.StoreWithSales, error) {
+	store := dto.StoreWithSales{}
+
+	res :=  db.Table("transactions t").Select("COALESCE(SUM(t.total_amount), 0) AS total_sales, s.name, s.rating, s.address, s.lat, s.long, s.id").Joins("RIGHT JOIN stores s ON s.id = t.store_id").Where("s.id = ?", storeId).Group("t.store_id").Group("s.id").Scan(&store)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return dto.StoreWithSales{}, echo.NewHTTPError(http.StatusNotFound, "Store Id not found")
+		}
+		return dto.StoreWithSales{}, echo.NewHTTPError(http.StatusInternalServerError, res.Error.Error())
+	}
+
+	if res.RowsAffected == 0 {
+		return dto.StoreWithSales{}, echo.NewHTTPError(http.StatusNotFound, "Store Id not found")
+	}
+	return store, nil
 }

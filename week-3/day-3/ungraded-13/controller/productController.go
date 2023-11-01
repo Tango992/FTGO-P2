@@ -32,7 +32,10 @@ func (pc ProductController) GetProducts(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, products)
+	return c.JSON(http.StatusOK, dto.Response{
+		Message: "Get all products",
+		Data: products,
+	})
 }
 
 // Transaction   godoc

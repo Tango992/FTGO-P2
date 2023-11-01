@@ -62,7 +62,7 @@ func main() {
 	stores := e.Group("/stores")
 	{
 		stores.GET("", storeController.GetStores)
-		stores.POST("/:id", storeController.GetStoreById)
+		stores.GET("/:id", storeController.GetStoreById)
 	}
 	
     e.GET("/products", productController.GetProducts)

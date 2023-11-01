@@ -52,7 +52,10 @@ func (uc UserController) Register(c echo.Context) error {
 		return dbErr
 	}
 	
-	return c.JSON(http.StatusCreated, user)
+	return c.JSON(http.StatusCreated, dto.Response{
+		Message: "Registered",
+		Data: user,
+	})
 }
 
 // Login         godoc
