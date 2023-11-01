@@ -1,0 +1,252 @@
+basePath: /
+definitions:
+  dto.Error:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.Login:
+    properties:
+      password:
+        type: string
+        x-order: "1"
+      username:
+        type: string
+        x-order: "0"
+    required:
+    - password
+    - username
+    type: object
+  dto.LoginResponse:
+    properties:
+      message:
+        type: string
+        x-order: "0"
+      token:
+        type: string
+        x-order: "1"
+    type: object
+  dto.RegisterResponse:
+    properties:
+      deposit_amount:
+        type: number
+        x-order: "2"
+      id:
+        type: integer
+        x-order: "0"
+      username:
+        type: string
+        x-order: "1"
+    type: object
+  dto.RegisterUser:
+    properties:
+      deposit_amount:
+        type: number
+        x-order: "2"
+      password:
+        type: string
+        x-order: "1"
+      username:
+        type: string
+        x-order: "0"
+    required:
+    - deposit_amount
+    - password
+    - username
+    type: object
+  dto.RequestTransaction:
+    properties:
+      product_id:
+        type: integer
+      quantity:
+        type: integer
+    required:
+    - product_id
+    - quantity
+    type: object
+  dto.TransactionResponse:
+    properties:
+      data:
+        allOf:
+        - $ref: '#/definitions/entity.Transaction'
+        x-order: "1"
+      message:
+        type: string
+        x-order: "0"
+    type: object
+  entity.Product:
+    properties:
+      name:
+        type: string
+        x-order: "1"
+      price:
+        type: number
+        x-order: "3"
+      product_id:
+        type: integer
+        x-order: "0"
+      stock:
+        type: integer
+        x-order: "2"
+    type: object
+  entity.Transaction:
+    properties:
+      product_id:
+        type: integer
+        x-order: "2"
+      quantity:
+        type: integer
+        x-order: "3"
+      total_amount:
+        type: number
+        x-order: "4"
+      transaction_id:
+        type: integer
+        x-order: "0"
+      user_id:
+        type: integer
+        x-order: "1"
+    type: object
+host: localhost:1323
+info:
+  contact:
+    email: email@mail.com
+    name: Daniel Osvaldo Rahmanto
+  description: Made for Ungraded Challenge 11 - Hacktiv8 FTGO
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Ungraded 11-12 API
+  version: "1.0"
+paths:
+  /products:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Product'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Error'
+      summary: View all products
+      tags:
+      - products
+  /transactions:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Transaction data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RequestTransaction'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.TransactionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Error'
+      summary: Establish a transaction
+      tags:
+      - transactions
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Log in data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Error'
+      summary: Log in an existing account
+      tags:
+      - user
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Registration data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterUser'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.RegisterResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Error'
+      summary: Register an account
+      tags:
+      - user
+swagger: "2.0"
