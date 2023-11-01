@@ -22,6 +22,14 @@ func NewStoreController(dbHandler repository.DbHandler) StoreController {
 	}
 }
 
+// Stores        godoc
+// @Summary      View all stores
+// @Tags         stores
+// @Produce      json
+// @Success      200  {object}  dto.StoreResponse
+// @Failure      400  {object}  dto.Error
+// @Failure      500  {object}  dto.Error
+// @Router       /stores [get]
 func (sc StoreController) GetStores(c echo.Context) error {
 	stores, dbErr := sc.DbHandler.FindAllStoresInDb()
 	if dbErr != nil {
@@ -33,6 +41,15 @@ func (sc StoreController) GetStores(c echo.Context) error {
 	})
 }
 
+// Stores by Id  godoc
+// @Summary      Get store by Id
+// @Tags         stores
+// @Produce      json
+// @Param        store_id path int true "Store Id"
+// @Success      200  {object}  dto.StoreByIdResponse
+// @Failure      400  {object}  dto.Error
+// @Failure      500  {object}  dto.Error
+// @Router       /stores/{store_id} [get]
 func (sc StoreController) GetStoreById(c echo.Context) error {
 	storeIdTemp := c.Param("id")
 	storeId, err := strconv.Atoi(storeIdTemp)

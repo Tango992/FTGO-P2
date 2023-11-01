@@ -35,10 +35,78 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/entity.Product"
-                            }
+                            "$ref": "#/definitions/dto.ProductResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/stores": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stores"
+                ],
+                "summary": "View all stores",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StoreResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/stores/{store_id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stores"
+                ],
+                "summary": "Get store by Id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Store Id",
+                        "name": "store_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StoreByIdResponse"
                         }
                     },
                     "400": {
@@ -262,7 +330,40 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.ProductResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.Product"
+                    },
+                    "x-order": "1"
+                }
+            }
+        },
         "dto.RegisterResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "data": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/dto.RegisterResponseTmp"
+                        }
+                    ],
+                    "x-order": "1"
+                }
+            }
+        },
+        "dto.RegisterResponseTmp": {
             "type": "object",
             "properties": {
                 "id": {
@@ -305,7 +406,8 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "product_id",
-                "quantity"
+                "quantity",
+                "store_id"
             ],
             "properties": {
                 "product_id": {
@@ -313,6 +415,100 @@ const docTemplate = `{
                 },
                 "quantity": {
                     "type": "integer"
+                },
+                "store_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.Store": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "store_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.StoreByIdResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "data": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/dto.StoreDetailSwaggo"
+                        }
+                    ],
+                    "x-order": "1"
+                }
+            }
+        },
+        "dto.StoreDetailSwaggo": {
+            "type": "object",
+            "properties": {
+                "store": {
+                    "$ref": "#/definitions/dto.StoreWithSales"
+                },
+                "weather": {
+                    "type": "object"
+                }
+            }
+        },
+        "dto.StoreResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "x-order": "0"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.Store"
+                    },
+                    "x-order": "1"
+                }
+            }
+        },
+        "dto.StoreWithSales": {
+            "type": "object",
+            "properties": {
+                "store_id": {
+                    "type": "integer",
+                    "x-order": "0"
+                },
+                "name": {
+                    "type": "string",
+                    "x-order": "1"
+                },
+                "rating": {
+                    "type": "number",
+                    "x-order": "2"
+                },
+                "address": {
+                    "type": "string",
+                    "x-order": "3"
+                },
+                "latitude": {
+                    "type": "number",
+                    "x-order": "4"
+                },
+                "longitude": {
+                    "type": "number",
+                    "x-order": "5"
+                },
+                "total_sales": {
+                    "type": "number",
+                    "x-order": "6"
                 }
             }
         },
@@ -369,13 +565,17 @@ const docTemplate = `{
                     "type": "integer",
                     "x-order": "2"
                 },
-                "quantity": {
+                "store_id": {
                     "type": "integer",
                     "x-order": "3"
                 },
+                "quantity": {
+                    "type": "integer",
+                    "x-order": "4"
+                },
                 "total_amount": {
                     "type": "number",
-                    "x-order": "4"
+                    "x-order": "5"
                 }
             }
         }
@@ -388,8 +588,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:1323",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "Ungraded 11-12 API",
-	Description:      "Made for Ungraded Challenge 11 - Hacktiv8 FTGO",
+	Title:            "Ungraded 13 API",
+	Description:      "Made for Ungraded Challenge 13 - Hacktiv8 FTGO",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

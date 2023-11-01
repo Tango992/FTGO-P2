@@ -23,7 +23,7 @@ func NewProductHandler(dbHandler repository.DbHandler) ProductController {
 // @Summary      View all products
 // @Tags         products
 // @Produce      json
-// @Success      200  {object}  []entity.Product
+// @Success      200  {object}  dto.ProductResponse
 // @Failure      400  {object}  dto.Error
 // @Failure      500  {object}  dto.Error
 // @Router       /products [get]

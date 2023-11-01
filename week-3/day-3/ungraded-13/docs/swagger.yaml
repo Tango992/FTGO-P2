@@ -26,7 +26,28 @@ definitions:
         type: string
         x-order: "1"
     type: object
+  dto.ProductResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/entity.Product'
+        type: array
+        x-order: "1"
+      message:
+        type: string
+        x-order: "0"
+    type: object
   dto.RegisterResponse:
+    properties:
+      data:
+        allOf:
+        - $ref: '#/definitions/dto.RegisterResponseTmp'
+        x-order: "1"
+      message:
+        type: string
+        x-order: "0"
+    type: object
+  dto.RegisterResponseTmp:
     properties:
       deposit_amount:
         type: number
@@ -60,9 +81,73 @@ definitions:
         type: integer
       quantity:
         type: integer
+      store_id:
+        type: integer
     required:
     - product_id
     - quantity
+    - store_id
+    type: object
+  dto.Store:
+    properties:
+      address:
+        type: string
+      name:
+        type: string
+      store_id:
+        type: integer
+    type: object
+  dto.StoreByIdResponse:
+    properties:
+      data:
+        allOf:
+        - $ref: '#/definitions/dto.StoreDetailSwaggo'
+        x-order: "1"
+      message:
+        type: string
+        x-order: "0"
+    type: object
+  dto.StoreDetailSwaggo:
+    properties:
+      store:
+        $ref: '#/definitions/dto.StoreWithSales'
+      weather:
+        type: object
+    type: object
+  dto.StoreResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.Store'
+        type: array
+        x-order: "1"
+      message:
+        type: string
+        x-order: "0"
+    type: object
+  dto.StoreWithSales:
+    properties:
+      address:
+        type: string
+        x-order: "3"
+      latitude:
+        type: number
+        x-order: "4"
+      longitude:
+        type: number
+        x-order: "5"
+      name:
+        type: string
+        x-order: "1"
+      rating:
+        type: number
+        x-order: "2"
+      store_id:
+        type: integer
+        x-order: "0"
+      total_sales:
+        type: number
+        x-order: "6"
     type: object
   dto.TransactionResponse:
     properties:
@@ -96,10 +181,13 @@ definitions:
         x-order: "2"
       quantity:
         type: integer
+        x-order: "4"
+      store_id:
+        type: integer
         x-order: "3"
       total_amount:
         type: number
-        x-order: "4"
+        x-order: "5"
       transaction_id:
         type: integer
         x-order: "0"
@@ -112,11 +200,11 @@ info:
   contact:
     email: email@mail.com
     name: Daniel Osvaldo Rahmanto
-  description: Made for Ungraded Challenge 11 - Hacktiv8 FTGO
+  description: Made for Ungraded Challenge 13 - Hacktiv8 FTGO
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  title: Ungraded 11-12 API
+  title: Ungraded 13 API
   version: "1.0"
 paths:
   /products:
@@ -127,9 +215,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/entity.Product'
-            type: array
+            $ref: '#/definitions/dto.ProductResponse'
         "400":
           description: Bad Request
           schema:
@@ -141,6 +227,52 @@ paths:
       summary: View all products
       tags:
       - products
+  /stores:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StoreResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Error'
+      summary: View all stores
+      tags:
+      - stores
+  /stores/{store_id}:
+    get:
+      parameters:
+      - description: Store Id
+        in: path
+        name: store_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StoreByIdResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Error'
+      summary: Get store by Id
+      tags:
+      - stores
   /transactions:
     post:
       consumes:
