@@ -29,7 +29,6 @@ func InventoryWebsocket(c echo.Context) error {
 		if err != nil {
 			c.Logger().Error(err)
 		}
-		fmt.Println(msgTmp)
 		
 		msg :=  msgTmp.(map[string]any)
 		sender := msg["name"].(string)
@@ -37,8 +36,9 @@ func InventoryWebsocket(c echo.Context) error {
 
 		for _, client := range inventoryClients {
 			notification := fmt.Sprintf(`
-				<div hx-swap-oob="beforeend:#notifications">
-					<p>%s: %s</p>
+				<div hx-swap-oob="beforeend:#notifications" >
+					<p class="py-0 my-0"><small>%s</small></p>
+					<p class="lead">%s</p>
 				</div>`, sender, message)
 
 			// Write
@@ -64,7 +64,6 @@ func CrimeWebsocket(c echo.Context) error {
 		if err != nil {
 			c.Logger().Error(err)
 		}
-		fmt.Println(msgTmp)
 		
 		msg :=  msgTmp.(map[string]any)
 		sender := msg["name"].(string)
@@ -72,9 +71,10 @@ func CrimeWebsocket(c echo.Context) error {
 
 		for _, client := range crimeClients {
 			notification := fmt.Sprintf(`
-				<div hx-swap-oob="beforeend:#notifications">
-					<p>%s: %s</p>
-				</div>`, sender, message)
+			<div hx-swap-oob="beforeend:#notifications" >
+				<p class="py-0 my-0"><small>%s</small></p>
+				<p class="lead">%s</p>
+			</div>`, sender, message)
 
 			// Write
 			if err := client.WriteMessage(websocket.TextMessage, []byte(notification)); err != nil {
@@ -99,7 +99,6 @@ func RandomWebsocket(c echo.Context) error {
 		if err != nil {
 			c.Logger().Error(err)
 		}
-		fmt.Println(msgTmp)
 		
 		msg :=  msgTmp.(map[string]any)
 		sender := msg["name"].(string)
@@ -107,9 +106,10 @@ func RandomWebsocket(c echo.Context) error {
 
 		for _, client := range randomClients {
 			notification := fmt.Sprintf(`
-				<div hx-swap-oob="beforeend:#notifications">
-					<p>%s: %s</p>
-				</div>`, sender, message)
+			<div hx-swap-oob="beforeend:#notifications" >
+				<p class="py-0 my-0"><small>%s</small></p>
+				<p class="lead">%s</p>
+			</div>`, sender, message)
 
 			// Write
 			if err := client.WriteMessage(websocket.TextMessage, []byte(notification)); err != nil {
@@ -118,3 +118,4 @@ func RandomWebsocket(c echo.Context) error {
 		}
 	}
 }
+
