@@ -37,5 +37,5 @@ func main() {
 	e.GET("/ws/crime", controller.CrimeWebsocket)
 	e.GET("/ws/random", controller.RandomWebsocket)
 
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(":8080"))
 }

@@ -25,4 +25,5 @@ use (
 	./week-3/day-3/ungraded-13
 	./week-3/day-4/ungraded-14
 	./week-3/day-4/websocket-demo
+	./week-4/day-1/preview
 )
