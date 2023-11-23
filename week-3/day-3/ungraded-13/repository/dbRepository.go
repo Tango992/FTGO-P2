@@ -2,6 +2,8 @@ package repository
 
 import (
 	"errors"
+	"fmt"
+	"log"
 	"net/http"
 	"ungraded-13/dto"
 	"ungraded-13/entity"
@@ -53,6 +55,15 @@ func (db DbHandler) FindUserInDb(username string) (entity.User, error){
 func (db DbHandler) GetAllProducts() ([]entity.Product, error) {
 	products := []entity.Product{}
 
+	sqlDB, err := db.DB.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	stats := sqlDB.Stats()
+	fmt.Println("Postgres maximum open connection:", stats.MaxOpenConnections)
+	
+	
 	res := db.Find(&products)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
